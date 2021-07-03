@@ -36,9 +36,9 @@ const List = () => {
 
   console.log(bodyData);
   return (
-    <div class="row auto badge bg-success border border-5 text-wrap rounded  " >
+    <div class="row mt-5 auto badge bg-success border border-5 text-wrap rounded  " >
       <h1>List table</h1>
-      <div class="input-group input-group-sm mb-3 ">
+      <div class="input-group input-group-sm mb-3 mt-3 text-center ">
         <span class="input-group-text">Search any item by name</span>
         <input
           type="text"
