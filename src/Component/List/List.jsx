@@ -16,15 +16,19 @@ const List = () => {
       .then((res) => res.json())
       .then((data) => setBodyData(data.data.rows));
   }, []);
-//   useEffect(() => {
-//     const url = `http://localhost/api/list.php?s=${search}`;
-//     fetch(url)
-//       .then((res) => res.json())
-//       .then((data) => setItemSearch(data.data.rows.map((e) => e.name)));    
-//   }, [search]);
-  useEffect(() => {setItemSearch(bodyData.filter((list) => {
-    return list.name.toLowerCase().includes(search.toLowerCase());
-  }))}, [search,bodyData])
+  //   useEffect(() => {
+  //     const url = `http://localhost/api/list.php?s=${search}`;
+  //     fetch(url)
+  //       .then((res) => res.json())
+  //       .then((data) => setItemSearch(data.data.rows.map((e) => e.name)));
+  //   }, [search]);
+  useEffect(() => {
+    setItemSearch(
+      bodyData.filter((list) => {
+        return list.name.toLowerCase().includes(search.toLowerCase());
+      })
+    );
+  }, [search, bodyData]);
 
   const handleChange = (event) => {
     setSearch(event.target.value);
@@ -32,19 +36,19 @@ const List = () => {
 
   console.log(bodyData);
   return (
-    <div>
+    <div class="row auto badge bg-success border border-5 text-wrap rounded  " >
       <h1>List table</h1>
-      <div>
-        <p>Search any list item </p>
+      <div class="input-group input-group-sm mb-3 ">
+        <span class="input-group-text">Search any item by name</span>
         <input
           type="text"
           onChange={handleChange}
           placeholder="search list item by name"
         ></input>
-        <p>Serched Item = {search.length || 0}</p>
-        <p>Serched Item = {itemSearch.length}</p>
+        <p class = " bd-highligh  text-sm-start px-3 ">Searched Item Length = {search.length || 0}</p>
+        <p class = " bd-highligh  text-sm-start px-3">Found Item = {itemSearch.length}</p>
       </div>
-      <striped bordered hover>
+      <table class="table table-primary ">
         <thead>
           <tr>
             <th>{header.id?.title}</th>
@@ -58,7 +62,7 @@ const List = () => {
             <ListRow list={list} />
           ))}
         </tbody>
-      </striped>
+      </table>
     </div>
   );
 };
