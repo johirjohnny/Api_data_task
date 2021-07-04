@@ -7,7 +7,7 @@
 ***All Set to run the code . 
 ###  ShortCut of run the project
 -run the xampp and put all the api file in the htdocs.
--clik the link : https://compassionate-fermat-cd39a2.netlify.app/
+-click this Live link : https://compassionate-fermat-cd39a2.netlify.app/
 [you have to installed node on your pc]
 
 # Features 
