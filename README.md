@@ -1,10 +1,13 @@
 # Installation
 
-1.run xampp and put all the api file in the htdocs.
-2.clone the repo and run with vs code
-3.install npm by using 'npm install' command
-4.start the project by npm start 
+-run xampp and put all the api file in the htdocs.
+-clone the repo and run with vs code
+-install npm by using 'npm install' command
+-start the project by npm start 
 ***All Set to run the code . 
+###  ShortCut of run the project
+-run the xampp and put all the api file in the htdocs.
+-clik the link : https://compassionate-fermat-cd39a2.netlify.app/
 [you have to installed node on your pc]
 
 # Features 
