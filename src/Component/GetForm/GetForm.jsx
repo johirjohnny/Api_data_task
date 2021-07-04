@@ -1,29 +1,132 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Col,
-  Input,
-  Row,
-  FormGroup,
-  Label,
-  Form,
-  CustomInput,
-  Button,
-  Alert,
-  FormText,
-} from "reactstrap";
+import {Input,FormGroup,Label,CustomInput,Button,Alert,FormText,} from "reactstrap";
 
 const GetForm = () => {
   const [formFields, setFormFields] = useState({}); //store data from get_form.php
   const [formValues, setFormValues] = useState({}); //store input form values
   const [responseMessage, setResponseMessage] = useState("");
-
+  const [errorMessage, setErrorMessage] = useState({});
   useEffect(() => {
     fetch("http://localhost/api/get_form.php")
       .then((res) => res.json())
       .then((data) => setFormFields(data.data.fields[0])); //get data form get-form.php
   }, []);
   //console.log(formFields);
+  const validForm = (type, value, name) => {
+    if (type === "only_letters") {
+      return value.match(/^[a-zA-Z ]*$/)
+        ? setErrorMessage({ invalid: false, message: "" })
+        : setErrorMessage({
+            invalid: true,
+            message: "only  character type are support",
+            name
+          });
+    } else if (type === "email|max:200") {
+      return value.length > 20
+        ? setErrorMessage({
+            invalid: true,
+            message: "email must be in 20 character",
+            name
+          })
+        : setErrorMessage({ invalid: false, message: "" });
+    } else {
+      return { invalid: false, message: "" };
+    }
+  };
+
+  const handleChange = (target) => {
+    let name = target.name;
+    let value = target.value;
+    //console.log(value);
+    const inputValues = { ...formValues };
+    inputValues[name] = value;
+    setFormValues(inputValues);
+  };
+
+  const formInput = (formObj) => {
+    //console.log(formObj)
+    const {
+      type,
+      options,
+      required,
+      validate,
+      html_attr: { id, class: className },
+    } = formObj[1]; //destructuring data form api get_form.php
+    let fieldName = formObj[0]; //
+
+    if (type === "radio") {
+      //check the gender option type and based on that set default value
+      return (
+        <FormGroup id={id}>
+          {options.map((option) => {
+            return (
+              <CustomInput
+                key={option.key}
+                type={type}
+                id={option.key}
+                label={option.label}
+                defaultChecked={formObj[1].default}
+                className={className}
+                name={fieldName}
+                value={option.key}
+                onChange={({ target }) => {
+                  handleChange(target);
+                }}
+                inline
+              />
+            );
+          })}
+        </FormGroup>
+      );
+    } else if (type === "select") {
+      return (
+        <CustomInput
+          type={type}
+          id={id}
+          required={required}
+          name={fieldName}
+          className={className}
+          value={formValues[fieldName]}
+          onChange={({ target }) => {
+            handleChange(target);
+          }}
+        >
+          {options.map((option) => (
+            <option
+              key={option.key}
+              value={option.key}
+              defaultValue={formObj[1].default}
+            >
+              {option.label}
+            </option>
+          ))}
+        </CustomInput>
+      );
+    } else {
+      return (
+        <FormGroup>
+          <Input
+            className={className}
+            id={id}
+            required={required}
+            type={type}
+            name={fieldName}
+            value={formValues[fieldName] || ""}
+            onChange={({ target }) => {
+              handleChange(target);
+              validForm(validate, target.value, fieldName);
+            }}
+            invalid={errorMessage.name === fieldName && errorMessage.invalid}
+          />
+          {errorMessage.name === fieldName && (
+            <FormText>{errorMessage.message}</FormText>
+          )}
+        </FormGroup>
+      );
+    }
+  };
+
   const handleSubmit = (e) => {
     //handle form data by posting to submit form
     e.preventDefault();
@@ -50,29 +153,36 @@ const GetForm = () => {
       .then((res) => {
         setResponseMessage(res.data.status);
       });
-    setFormValues({});
-  };                  
+  };
   return (
-    <div class="row"> 
-      <div class="col mb-5">                                   
-        <h1 class="mt-5 text-center mb-5 ">Get Form</h1>             
-        <Form onSubmit={handleSubmit}>
-          {
+    <div class="row">
+      <div class=" col ms-5">
+        <h1 class="mt-5 text-center mb-5">Get Form</h1>
+        <form onSubmit={handleSubmit}>
+          {Object.keys(formFields).length &&
             Object.entries(formFields).map((value, key) => {
-             // console.log({ formFields });
-              return (                                                       //show the get_form data title                           
-                <FormGroup row key={key}>
-                  <Label for="title" sm={2} className="font-weight-bold">   
-                    {value[1].title}   
-                                                     
+              return (
+                <div class="form-group mx-4" row key={key}>
+                  <Label for="title of all type" className="font-weight-bold">
+                    {value[1].title}
                   </Label>
-                </FormGroup>
+                  <div class="col ">{formInput(value)}</div>
+                </div>
               );
-            })}                                                    
-            <Button color="success" type="submit">                     
-            Submit Form
+            })}
+          <Button color="primary" type="submit">
+            Submit
           </Button>
-        </Form>
+        </form>
+    
+        {responseMessage && (               //show the response message from the post request using an alert type 
+          <Alert
+            color={responseMessage === "success" ? "success" : "danger"}
+            class="mt-4"
+          >
+            {responseMessage}
+          </Alert>
+        )}
       </div>
     </div>
   );
